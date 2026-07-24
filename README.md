@@ -61,67 +61,41 @@ Every diagnosis is backed by real telemetry.
 # Architecture
 
 ```
+                                User
+                                 │
+                                 ▼
+    ┌─────────────────────────────────────────────────────────┐
+    │                   Next.js Dashboard                     │
+    │                                                         │
+    │  Command Center • Timeline • Copilot • Chaos Engine     │
+    └────────────────────────────┬────────────────────────────┘
+                                 │ HTTP / REST & SSE
+                                 ▼
+    ┌─────────────────────────────────────────────────────────┐
+    │                    FastAPI Backend                      │
+    │                                                         │
+    │  • REST API & SSE Router                                │
+    │  • OTel Auto/Manual Instrumentation                     │
+    │  • SigNoz MCP Client                                    │
+    │  • Chaos Fault Injector                                 │
+    └──────────────┬───────────────────────────▲──────────────┘
+                   │                           │
+                   ▼                           │ MCP JSON-RPC
+    ┌─────────────────────────────┐   ┌────────┴─────────────┐
+    │  LangGraph 4-Agent Fleet    │   │  SigNoz MCP Server   │
+    │                             │   │  (Sidecar Container) │
+    │  Monitor ──► Diagnosis      │   └────────▲─────────────┘
+    │     │           │           │            │
+    │     ▼           ▼           │            │ REST Query API
+    │    Fix   ──►  Report        │            │
+    └──────────────┬──────────────┘   ┌────────┴─────────────┐
+                   │ OTLP gRPC (4317) │    SigNoz Platform   │
+                   ▼                  │   (ClickHouse Engine)│
+    ┌─────────────────────────────┐   │                      │
+    │   OTel Collector Pipeline   ├──►│ • Traces  • Metrics  │
+    └─────────────────────────────┘   │ • Logs    • Alerts   │
+                                      └──────────────────────┘
 
-                            User
-
-                               │
-
-                               ▼
-
-┌─────────────────────────────────────────────────────┐
-│                  Next.js Dashboard                  │
-│                                                     │
-│ Command Center • Timeline • Copilot • Chaos Engine │
-└──────────────────────┬──────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│                 FastAPI Backend                     │
-│                                                     │
-│ Workflow Engine                                     │
-│ OpenTelemetry Instrumentation                       │
-│ REST API                                            │
-│ MCP Client                                          │
-└──────────────────────┬──────────────────────────────┘
-                       │
-                       ▼
-
-             LangGraph Multi-Agent Workflow
-
-     Monitor Agent
-             │
-             ▼
-     Diagnosis Agent
-             │
-             ▼
-        Fix Agent
-             │
-             ▼
-      Report Agent
-
-             │
-             ▼
-
-      OpenTelemetry Collector (OTLP)
-
-             │
-             ▼
-
-          SigNoz Platform
-
-     Traces
-     Metrics
-     Logs
-
-             │
-             ▼
-
-     SigNoz MCP Server (JSON-RPC)
-
-             │
-             ▼
-
-     Root Cause Copilot
 
 ```
 
