@@ -131,6 +131,20 @@ AI generates Root Cause Analysis
 Confidence Score assigned
 (HIGH / MEDIUM / LOW)
 ```
+---
+
+```
+ 1. Incident Trigger        ➜  User clicks "Trigger Incident Response" in Next.js UI
+ 2. Multi-Agent Run         ➜  LangGraph executes Monitor ➔ Diagnosis ➔ Fix ➔ Report
+ 3. OTel Instrumentation    ➜  Every agent decision emits gen_ai.* spans & metrics
+ 4. OTLP Export             ➜  Traces streamed via OTLP gRPC to OTel Collector (4317)
+ 5. SigNoz Storage          ➜  Collector indexes spans into ClickHouse tables
+ 6. Copilot MCP Query       ➜  Root Cause Copilot invokes SigNoz MCP tool calls
+ 7. Evidence Verification   ➜  EvidenceEngine validates traces, logs & APM metrics
+ 8. Confidence Scoring      ➜  ReasoningEngine assigns badge (🟢 HIGH / 🟡 MEDIUM / 🟠 LOW)
+ 9. Postmortem Output       ➜  Copilot streams evidence-supported RCA response back to UI
+
+```
 
 ---
 
