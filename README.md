@@ -798,6 +798,8 @@ Whether you're debugging an autonomous agent, tracking LLM costs, investigating 
 
 **Observe • Diagnose • Improve**
 
+By **Swapnil Nicolson Dadel**
+
 ⭐ If you found this project interesting, consider giving it a star.
 
 </p>
