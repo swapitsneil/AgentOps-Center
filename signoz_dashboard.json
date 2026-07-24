@@ -1,0 +1,69 @@
+{
+  "title": "AgentOps Center — GenAI & Agent Intelligence",
+  "description": "Pre-configured dashboard for SigNoz monitoring OpenTelemetry multi-agent systems, LLM token usage, cost tracking, and chaos fault injection.",
+  "tags": ["genai", "agents", "opentelemetry", "signoz", "langgraph"],
+  "widgets": [
+    {
+      "title": "Total LLM Token Consumption",
+      "type": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregateOperator": "sum",
+              "metricName": "gen_ai_total_tokens",
+              "queryName": "A"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Total LLM Cost ($ USD)",
+      "type": "value",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregateOperator": "sum",
+              "metricName": "gen_ai_total_cost_usd",
+              "queryName": "A"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Agent Execution Latency (P99 ms)",
+      "type": "time_series",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregateOperator": "p99",
+              "metricName": "agent_workflow_duration_ms",
+              "queryName": "A",
+              "groupBy": ["agent_name"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "LLM Calls per Agent",
+      "type": "bar_chart",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "aggregateOperator": "count",
+              "metricName": "agent_llm_calls",
+              "queryName": "A",
+              "groupBy": ["agent_name"]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

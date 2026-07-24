@@ -1,0 +1,7 @@
+# SigNoz Infrastructure Configuration
+otel_collector:
+  endpoint: "http://localhost:4317"
+  insecure: true
+clickhouse:
+  host: "localhost"
+  port: 9000

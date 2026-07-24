@@ -1,0 +1,221 @@
+# ============================================================
+# AgentOps Center — Full Stack
+# Runs: SigNoz + OTel Collector + Backend + Frontend
+#
+# Quick start:
+#   docker compose up -d
+#   Open http://localhost:3000  (AgentOps Center UI)
+#   Open http://localhost:8080  (SigNoz UI)
+# ============================================================
+
+x-common-env: &common-env
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+  OTEL_EXPORTER_OTLP_INSECURE: "true"
+
+networks:
+  agentops:
+    driver: bridge
+
+volumes:
+  clickhouse-data:
+  zookeeper-data:
+  sqlite-data:
+
+services:
+
+  # ─────────────────────────────────────────────────────────
+  # ZooKeeper (required by ClickHouse cluster mode)
+  # ─────────────────────────────────────────────────────────
+  zookeeper:
+    image: signoz/zookeeper:3.8.4
+    container_name: agentops-zookeeper
+    hostname: zookeeper
+    networks: [agentops]
+    volumes:
+      - zookeeper-data:/bitnami/zookeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────
+  # ClickHouse — SigNoz's storage backend
+  # ─────────────────────────────────────────────────────────
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.7.3-alpine
+    container_name: agentops-clickhouse
+    hostname: clickhouse
+    networks: [agentops]
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse/config.xml:/etc/clickhouse-server/config.d/custom.xml:ro
+      - ./clickhouse/users.xml:/etc/clickhouse-server/users.d/custom.xml:ro
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8123/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # ─────────────────────────────────────────────────────────
+  # SigNoz Query Service
+  # ─────────────────────────────────────────────────────────
+  signoz-query-service:
+    image: signoz/query-service:latest
+    container_name: agentops-signoz-query
+    hostname: query-service
+    networks: [agentops]
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    volumes:
+      - sqlite-data:/var/lib/signoz
+    environment:
+      ClickHouseUrl: tcp://clickhouse:9000
+      STORAGE: clickhouse
+      GODEBUG: netdns=go
+      TELEMETRY_ENABLED: "true"
+      DEPLOYMENT_TYPE: docker-standalone-amd
+      NO_AUTH: "true"
+    ports:
+      - "8085:8085"  # Internal API
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/api/v1/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────
+  # SigNoz Frontend
+  # ─────────────────────────────────────────────────────────
+  signoz-frontend:
+    image: signoz/frontend:latest
+    container_name: agentops-signoz-ui
+    networks: [agentops]
+    depends_on:
+      - signoz-query-service
+    ports:
+      - "8080:80"  # SigNoz UI at http://localhost:8080
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────
+  # OpenTelemetry Collector — receives spans from backend
+  # ─────────────────────────────────────────────────────────
+  otel-collector:
+    image: signoz/signoz-otel-collector:0.102.0
+    container_name: agentops-otel-collector
+    hostname: otel-collector
+    networks: [agentops]
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otel-collector-config.yaml:ro
+    environment:
+      OTEL_RESOURCE_ATTRIBUTES: service.name=signoz-otel-collector
+      DOCKER_MULTI_NODE_CLUSTER: "false"
+      LOW_CARDINALITY_EXCEPTION_GROUPING: "false"
+      CLICKHOUSE_CLUSTER: "cluster"
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    ports:
+      - "4317:4317"   # OTLP gRPC — backend sends here
+      - "4318:4318"   # OTLP HTTP
+      - "8888:8888"   # Prometheus metrics (collector self-monitoring)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:13133/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ─────────────────────────────────────────────────────────
+  # AgentOps Center Backend (FastAPI + LangGraph)
+  # ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agentops-backend
+    hostname: backend
+    networks: [agentops]
+    depends_on:
+      otel-collector:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      <<: *common-env
+      OTEL_SERVICE_NAME: agentops-center-backend
+      OTEL_SERVICE_VERSION: "0.1.0"
+      CORS_ORIGINS: "http://localhost:3000,http://frontend:3000"
+      APP_ENV: production
+      # MCP: point to the signoz-mcp sidecar (inside Docker network)
+      SIGNOZ_MCP_URL: http://signoz-mcp:8000/mcp
+      SIGNOZ_URL: http://signoz-query-service:8085
+      SIGNOZ_API_KEY: ${SIGNOZ_API_KEY:-signoz-local-key}
+      MCP_TIMEOUT: "30"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────
+  # AgentOps Center Frontend (Next.js 15)
+  # ─────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: agentops-frontend
+    hostname: frontend
+    networks: [agentops]
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"  # AgentOps Center UI at http://localhost:3000
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────
+  # SigNoz MCP Server — bridges AI agents to SigNoz telemetry
+  # Exposes signoz_* MCP tools via HTTP JSON-RPC 2.0
+  # The backend calls this at http://signoz-mcp:8000/mcp
+  # Reference: https://github.com/SigNoz/signoz-mcp-server
+  # ─────────────────────────────────────────────────────────
+  signoz-mcp:
+    image: signoz/signoz-mcp-server:latest
+    container_name: agentops-signoz-mcp
+    hostname: signoz-mcp
+    networks: [agentops]
+    depends_on:
+      signoz-query-service:
+        condition: service_healthy
+    environment:
+      TRANSPORT_MODE: http
+      MCP_SERVER_PORT: "8000"
+      MCP_SERVER_HOST: "0.0.0.0"
+      # Point to SigNoz query service HTTP API inside the Docker network
+      SIGNOZ_URL: http://signoz-query-service:8080
+      # SIGNOZ_API_KEY is optional for self-hosted — set in .env if needed
+      SIGNOZ_API_KEY: ${SIGNOZ_API_KEY:-signoz-local-key}
+      LOG_LEVEL: info
+    ports:
+      - "18080:8000"  # MCP HTTP endpoint at http://localhost:18080/mcp
+    restart: unless-stopped
