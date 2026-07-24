@@ -22,7 +22,6 @@ htmlcov/
 
 # ── Temporary & Binary Bundles ────────────────────────────
 mcp_bin/
-casting.yaml*
 mcp_manifest_raw.json
 
 # ── Node & Next.js Build Artifacts ────────────────────────

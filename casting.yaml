@@ -1,0 +1,49 @@
+# SigNoz Foundry Deployment Manifest for AgentOps Center
+# Schema: apiVersion: v1alpha1
+# Generated from: foundryctl gen examples (docker compose flavor)
+# Deploy with: foundryctl cast -f casting.yaml
+# Reference: https://github.com/SigNoz/signoz-mcp-server
+apiVersion: v1alpha1
+metadata:
+  name: agentops-center
+  description: "AI Operations Center — Multi-agent observability demo powered by SigNoz"
+  version: "0.1.0"
+  labels:
+    project: agentops-center
+    hackathon: signoz-2026
+spec:
+  deployment:
+    mode: docker
+    flavor: compose
+    composeFile: ./docker-compose.yml
+  services:
+    - name: backend
+      image: agentops-center-backend
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      ports:
+        - "8000:8000"
+      environment:
+        OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+        OTEL_SERVICE_NAME: agentops-center-backend
+        OTEL_SERVICE_VERSION: "0.1.0"
+        APP_ENV: production
+    - name: frontend
+      image: agentops-center-frontend
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      ports:
+        - "3000:3000"
+      environment:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    - name: signoz-mcp-server
+      image: signoz/signoz-mcp-server:latest
+      ports:
+        - "18080:8000"
+      environment:
+        TRANSPORT_MODE: http
+        MCP_SERVER_PORT: "8000"
+        SIGNOZ_URL: http://signoz-frontend:3301
+        LOG_LEVEL: info

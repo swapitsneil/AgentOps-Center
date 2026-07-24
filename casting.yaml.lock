@@ -1,0 +1,6 @@
+# Lockfile for casting.yaml (Foundry deployment)
+version: 0.1.0
+hash: "a8f9c2e4b6d1e3f5"
+dependencies:
+  backend: "0.1.0"
+  frontend: "0.1.0"
