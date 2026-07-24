@@ -352,7 +352,7 @@ cp .env.example .env
 Edit `.env`
 
 ```env
-OPENROUTER_API_KEY=your_api_key
+GROQ_API_KEY=your_api_key
 ```
 or
 Any api keys
