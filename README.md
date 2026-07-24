@@ -373,16 +373,6 @@ Start everything:
 ```bash
 docker compose up -d
 ```
-
-Open:
-
-| Service | URL |
-|----------|-----|
-| AgentOps Center | http://localhost:3000 |
-| SigNoz | http://localhost:8080 |
-| FastAPI Docs | http://localhost:8000/docs |
-| MCP | http://localhost:18080/mcp |
-
 ---
 
 # OpenTelemetry Instrumentation
