@@ -28,12 +28,13 @@ foundryctl cast -f casting.yaml
 
 ## 🤖 AI Usage Declaration
 
-Per hackathon rules, all AI tool usage during development is declared below:
+Per hackathon rules, all AI assistants and tools used during development are declared below:
 
-| Tool | Purpose | Extent |
-|---|---|---|
-| Google Gemini (Antigravity) | Architecture planning, code generation, infrastructure config | Generated initial boilerplate, OTel instrumentation, and UI structure |
-| Claude 3.5 Sonnet / 4.6 | Code review, instrumentation strategy | Architecture decisions and reasoning engine validation |
+| Tool / Model | Role / Purpose | Extent of Usage |
+| :--- | :--- | :--- |
+| **Google Antigravity IDE** | Primary IDE, codebase architecture planning, OTel setup, and component scaffolding | Generated initial project skeleton, Docker stack, and UI boilerplate |
+| **Claude Sonnet 4.6** | Code review, instrumentation strategy, and reasoning engine validation | Refactored MCP client payloads and verified telemetry signals |
+| **Claude Opus 4.6** | Deep architectural review and root cause confidence scoring logic | Evaluated evidence grading algorithm and system resilience |
 
 ---
 
