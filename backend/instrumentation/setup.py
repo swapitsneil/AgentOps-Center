@@ -21,6 +21,9 @@ from openinference.instrumentation.langchain import LangChainInstrumentor
 
 logger = logging.getLogger(__name__)
 
+# Suppress repetitive gRPC exporter connection retry warnings in standalone mode
+logging.getLogger("opentelemetry.exporter.otlp.proto.grpc.exporter").setLevel(logging.ERROR)
+
 _tracer_provider: TracerProvider | None = None
 _meter_provider: MeterProvider | None = None
 
