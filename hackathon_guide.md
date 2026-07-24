@@ -15,6 +15,17 @@
 
 ---
 
+## 📦 Foundry Deployment & Reproducibility (`casting.yaml`)
+
+Per SigNoz Hackathon requirements, this repository includes both **`casting.yaml`** and **`casting.yaml.lock`** for 1-step Foundry deployment reproduction:
+
+```bash
+# Reproduce the full SigNoz + AgentOps Center stack via Foundry:
+foundryctl cast -f casting.yaml
+```
+
+---
+
 ## 🤖 AI Usage Declaration
 
 Per hackathon rules, all AI tool usage during development is declared below:
