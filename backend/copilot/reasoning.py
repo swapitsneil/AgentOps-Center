@@ -166,7 +166,7 @@ RESPONSE STRUCTURE EXACT FORMAT:
 • **Telemetry Latency**: {latency_display}
 • **GenAI Tokens & Cost**: {tokens_cost_display}
 • **Error Logs & Alerts**: {logs_alerts_display}
-• **MCP Tools Queried**: `signoz_search_traces`, `signoz_query_metrics`, `signoz_search_logs`
+• **MCP Tools Queried**: {mcp_tools_display}
 
 ---
 
@@ -269,6 +269,7 @@ class ReasoningEngine:
         tokens_cost_display = "GenAI Tokens & Cost USD Tracked" if (evidence.token_metrics or evidence.cost_metrics) else "Telemetry Not Retrieved"
         logs_alerts_display = f"{evidence.error_log_count} Exceptions Logged" if evidence.error_log_count > 0 else "No Exception Spans"
         analysis_title = "Root Cause Analysis" if (evidence.has_real_telemetry() and evidence.mcp_available) else "Initial Assessment (Hypothesis)"
+        mcp_tools_display = "`signoz_search_traces`, `signoz_query_metrics`, `signoz_search_logs`" if (evidence.mcp_available and evidence.signals) else "None (SigNoz Telemetry Not Retrieved / Local Context Only)"
 
         badge = self._make_confidence_badge(confidence, evidence.mcp_available)
 
@@ -292,6 +293,7 @@ class ReasoningEngine:
                 latency_display=latency_display,
                 tokens_cost_display=tokens_cost_display,
                 logs_alerts_display=logs_alerts_display,
+                mcp_tools_display=mcp_tools_display,
                 analysis_section_title=analysis_title,
             )
         except Exception as err:

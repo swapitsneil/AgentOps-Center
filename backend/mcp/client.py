@@ -265,6 +265,8 @@ class SigNozMCPClient:
                 error="MCP server not initialized or unreachable",
             )
 
+        logger.info("[MCP-TOOL-INVOKE] Invoking MCP tool '%s' on %s (args: %s)", tool_name, self.mcp_url, arguments)
+
         payload = _build_tool_call_payload(tool_name, arguments)
         t0 = time.monotonic()
 
@@ -273,6 +275,7 @@ class SigNozMCPClient:
             resp.raise_for_status()
             duration_ms = (time.monotonic() - t0) * 1000
             data = resp.json()
+            logger.info("[MCP-TOOL-RESPONSE] Tool '%s' status=%d duration=%.1fms", tool_name, resp.status_code, duration_ms)
 
             if "error" in data:
                 err_msg = data["error"].get("message", "MCP error")
