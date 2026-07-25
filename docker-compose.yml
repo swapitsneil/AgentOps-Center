@@ -127,7 +127,6 @@ services:
       OTEL_RESOURCE_ATTRIBUTES: service.name=signoz-otel-collector
       DOCKER_MULTI_NODE_CLUSTER: "false"
       LOW_CARDINALITY_EXCEPTION_GROUPING: "false"
-      CLICKHOUSE_CLUSTER: "cluster"
     command: ["--config=/etc/otel-collector-config.yaml"]
     ports:
       - "4317:4317"   # OTLP gRPC — backend sends here
