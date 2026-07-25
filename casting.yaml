@@ -45,5 +45,5 @@ spec:
       environment:
         TRANSPORT_MODE: http
         MCP_SERVER_PORT: "8000"
-        SIGNOZ_URL: http://signoz-frontend:3301
+        SIGNOZ_URL: http://signoz-query-service:8080
         LOG_LEVEL: info
