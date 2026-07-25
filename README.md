@@ -14,20 +14,24 @@ Gain end-to-end visibility into your AI agents using **real telemetry**, not gue
 ![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-success?style=for-the-badge)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Instrumented-orange?style=for-the-badge)
 ![SigNoz](https://img.shields.io/badge/SigNoz-Observability-purple?style=for-the-badge)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)
+[![Medium Blog](https://img.shields.io/badge/Medium-Article-black?style=for-the-badge&logo=medium)](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7)
+[![Twitter Follow](https://img.shields.io/badge/Twitter-@swappingcodes-1DA1F2?style=for-the-badge&logo=x)](https://x.com/swappingcodes)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/swapnil-nicolson-dadel/)
 
 </p>
 
 ---
 
-## 🌐 Live Deployment Links
+## 🌐 Live Deployment & Media Links
 
-| Component | Live Production URL | Host | Status |
+| Resource | Link / URL | Host / Platform | Status |
 | :--- | :--- | :--- | :--- |
 | **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
 | **Backend Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
 | **API Documentation** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
-| **Health Monitor** | 🩺 [https://agentops-center-backend.onrender.com/health](https://agentops-center-backend.onrender.com/health) | **Render** | 🟢 Live |
+| **Medium Technical Article** | 📝 [Read Hackathon Article](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7) | **Medium** | 🟢 Published |
+| **Twitter / X** | 🐦 [@swappingcodes](https://x.com/swappingcodes) | **X / Twitter** | 🟢 Active |
+| **LinkedIn** | 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/) | **LinkedIn** | 🟢 Active |
 
 ---
 

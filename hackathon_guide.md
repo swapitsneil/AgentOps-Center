@@ -4,14 +4,16 @@
 
 ---
 
-## 🌐 Live Production Links
+## 🌐 Live Production & Media Links
 
-| Component | Live Production URL | Host | Status |
+| Resource | Live Production / Post URL | Host / Platform | Status |
 | :--- | :--- | :--- | :--- |
 | **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
 | **Backend Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
 | **API Documentation** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
-| **Health Monitor** | 🩺 [https://agentops-center-backend.onrender.com/health](https://agentops-center-backend.onrender.com/health) | **Render** | 🟢 Live |
+| **Medium Article** | 📝 [Why is my AI agent taking 45 seconds when nothing is even broken?](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7) | **Medium** | 🟢 Published |
+| **Twitter / X** | 🐦 [@swappingcodes](https://x.com/swappingcodes) | **X / Twitter** | 🟢 Active |
+| **LinkedIn** | 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/) | **LinkedIn** | 🟢 Active |
 
 ---
 
