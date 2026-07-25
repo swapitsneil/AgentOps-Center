@@ -144,20 +144,31 @@ STRICT RULES — NEVER VIOLATE:
 RESPONSE STRUCTURE:
 ## Evidence Confidence: {confidence_badge}
 
+## Telemetry Evidence Matrix (SigNoz MCP)
+• **Trace ID**: (Cite exact Trace ID from telemetry section, or state "N/A - Local Context")
+• **Span IDs**: (Cite span IDs or names, e.g. span-monitor-1154ms)
+• **Service Name**: `agentops-center-backend`
+• **Agent Involved**: (Specify Monitor / Diagnosis / Fix / Report Agent)
+• **Latency**: (Cite total workflow & per-agent latency in ms)
+• **Token Usage & Cost**: (Cite input/output tokens & calculated USD cost)
+• **Error Logs & Alerts**: (Cite error log records & active alert rules)
+• **MCP Tools Queried**: `signoz_search_traces`, `signoz_query_metrics`, `signoz_search_logs`
+
 ## Signals Found
-(List only signals from the VERIFIED SIGNOZ TELEMETRY section)
+(List specific telemetry signals verified via SigNoz MCP)
 
 ## Root Cause Analysis
-(Analysis based only on available evidence)
+(Analysis based strictly on the verified telemetry signals)
 
 ## Evidence-Supported Diagnosis
-(Specific conclusion with trace/metric citations from the evidence section)
+(Definitive technical conclusion with exact trace/metric citations)
 
 ## Recommended Remediation
-(Actionable steps based on the diagnosis)
+(Actionable runbook steps based on the diagnosis)
 
 ## Limitations
-(What additional telemetry would improve confidence)
+(What additional telemetry from SigNoz would increase confidence)
+
 """
 
 _HIGH_CONFIDENCE_ADDENDUM = """

@@ -10,6 +10,8 @@ function TimelineBar({ run }: { run: WorkflowRun }) {
   const [expanded, setExpanded] = useState(false);
   const timings = run.result?.agent_timings || {};
   const totalMs = Object.values(timings).reduce((s, v) => s + v, 0) || 1;
+  const maxMs = Math.max(...Object.values(timings).map(Number), 0);
+  const slowestAgent = maxMs > 0 ? Object.entries(timings).find(([_, v]) => v === maxMs)?.[0] : null;
   
   let offset = 0;
   
@@ -43,27 +45,32 @@ function TimelineBar({ run }: { run: WorkflowRun }) {
           const widthPct = ms ? Math.max(5, (ms / totalMs) * 100) : 0;
           const leftPct = offset;
           if (ms) offset += (ms / totalMs) * 100;
+          const isSlowest = agent.name === slowestAgent;
           
           return (
             <div key={agent.name} className="flex items-center gap-3">
-              <div className="w-20 text-xs font-medium" style={{ color: agent.color }}>{agent.label}</div>
+              <div className="w-28 flex items-center justify-between text-xs font-medium" style={{ color: agent.color }}>
+                <span>{agent.label}</span>
+                {isSlowest && <span className="text-[9px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1 rounded font-mono">🔥 Slowest</span>}
+              </div>
               <div className="flex-1 h-6 bg-white/5 rounded-md overflow-hidden relative">
                 {ms ? (
                   <div
-                    className="absolute top-0 h-full rounded-md flex items-center px-2 text-xs font-mono text-white"
+                    className="absolute top-0 h-full rounded-md flex items-center justify-between px-2 text-xs font-mono text-white"
                     style={{
                       left: `${leftPct}%`,
                       width: `${widthPct}%`,
-                      backgroundColor: agent.bgColor,
-                      border: `1px solid ${agent.borderColor}`,
-                      minWidth: '40px',
+                      backgroundColor: isSlowest ? '#b45309' : agent.bgColor,
+                      border: `1px solid ${isSlowest ? '#f59e0b' : agent.borderColor}`,
+                      minWidth: '50px',
                     }}
                   >
-                    {ms}ms
+                    <span>{ms}ms</span>
+                    {isSlowest && <span className="text-[10px] text-amber-200">Critical Path</span>}
                   </div>
                 ) : (
                   <div className="h-full flex items-center px-2">
-                    <span className="text-xs text-slate-600">{run.status === 'failed' ? 'failed' : 'pending'}</span>
+                    <span className="text-xs text-rose-400 font-semibold">{run.status === 'failed' ? '🔴 Failed Node' : 'pending'}</span>
                   </div>
                 )}
               </div>

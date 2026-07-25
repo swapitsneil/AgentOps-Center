@@ -53,6 +53,21 @@ When an AI workflow fails, engineers often struggle to answer critical questions
 - Which agent failed?
 - Which tool caused the issue?
 - How much did the failed execution cost?
+- Why did the workflow take 45 seconds to finish?
+
+---
+
+### 🏆 Why SigNoz is the Single Source of Truth
+
+AgentOps Center does **NOT** rely on LLM guesses or unverified prompt context. **SigNoz is the single source of truth** for all incident response, performance profiling, and debugging:
+
+1. **Native OpenTelemetry Instrumentation (`gen_ai.*`)**: Every agent node execution, model call, token count, and tool execution emits OTel spans directly to SigNoz ClickHouse via OTLP gRPC (`port 4317`).
+2. **SigNoz MCP Tool Server Sidecar**: The Root Cause Copilot queries SigNoz telemetry over MCP JSON-RPC 2.0 (`signoz_search_traces`, `signoz_query_metrics`, `signoz_search_logs`).
+3. **Evidence-Driven Confidence Badges**: Copilot answers are strictly graded (`🟢 HIGH`, `🟡 MEDIUM`, `🟠 LOW`) based on verified Trace IDs, Span IDs, error logs, and metrics returned by SigNoz.
+4. **Reproducible Foundry Deployment**: Includes `casting.yaml` and `casting.yaml.lock` for 1-step Foundry deployment (`foundryctl cast -f casting.yaml`).
+
+---
+
 - Which prompt produced the incorrect response?
 - Where is the evidence proving the diagnosis?
 

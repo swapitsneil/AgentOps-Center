@@ -109,6 +109,20 @@ export default function ChaosPage() {
             </div>
           </div>
 
+          {/* Chaos Verification Pipeline Flow */}
+          <div className="glass-card p-3.5 flex items-center justify-between border border-blue-500/20 text-xs">
+            <div className="flex items-center gap-2 text-slate-400 overflow-x-auto">
+              <span className="font-semibold text-white">Chaos Verification Loop:</span>
+              <span className="px-2.5 py-1 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30 whitespace-nowrap">1. Normal Execution</span>
+              <span>➔</span>
+              <span className="px-2.5 py-1 rounded bg-rose-500/10 text-rose-300 border border-rose-500/30 whitespace-nowrap">2. Fault Injected</span>
+              <span>➔</span>
+              <span className="px-2.5 py-1 rounded bg-purple-500/10 text-purple-300 border border-purple-500/30 whitespace-nowrap">3. SigNoz OTel Traces Captured</span>
+              <span>➔</span>
+              <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 whitespace-nowrap">4. Copilot MCP Diagnosis</span>
+            </div>
+          </div>
+
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {modes.map(mode => {
