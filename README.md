@@ -36,6 +36,7 @@ Gain end-to-end visibility into your AI agents using **real telemetry**, not gue
 | :--- | :--- | :--- | :--- |
 | **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
 | **Backend Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
+| **SigNoz MCP Bridge** | ⚙️ `http://agentops-signoz-mcp:10000/mcp` | **Render Private Net** | 🟢 Active |
 | **API Documentation** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
 
 ---

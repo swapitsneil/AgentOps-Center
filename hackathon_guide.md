@@ -10,6 +10,7 @@
 | :--- | :--- | :--- | :--- |
 | **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
 | **Backend Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
+| **SigNoz MCP Bridge** | ⚙️ `http://agentops-signoz-mcp:10000/mcp` | **Render Private Net** | 🟢 Active |
 | **API Documentation** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
 | **Medium Article** | 📝 [Why is my AI agent taking 45 seconds when nothing is even broken?](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7) | **Medium** | 🟢 Published |
 | **Twitter / X** | 🐦 [@swappingcodes](https://x.com/swappingcodes) | **X / Twitter** | 🟢 Active |
