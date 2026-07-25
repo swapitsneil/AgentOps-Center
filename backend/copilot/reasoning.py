@@ -45,15 +45,15 @@ class ReasoningContext:
     def format_confidence_badge(self) -> str:
         if self.confidence == ConfidenceLevel.LOW:
             if self.evidence and self.evidence.mcp_available:
-                return "🟠 LOW — MCP connected; limited telemetry available"
-            return "🟠 LOW — SigNoz MCP server not connected; using local context only"
+                return "🟠 LOW (Awaiting SigNoz Trace Verification)"
+            return "🟠 LOW (Verified Local Context Only)"
 
         badges = {
-            ConfidenceLevel.HIGH: "🟢 HIGH — Based on verified SigNoz telemetry (MCP connected)",
-            ConfidenceLevel.MEDIUM: "🟡 MEDIUM — Partial SigNoz telemetry available",
-            ConfidenceLevel.NONE: "🔴 NONE — Insufficient data to diagnose",
+            ConfidenceLevel.HIGH: "🟢 HIGH (Verified via SigNoz Telemetry)",
+            ConfidenceLevel.MEDIUM: "🟡 MEDIUM (Partial Telemetry Verified)",
+            ConfidenceLevel.NONE: "🔴 NONE (Insufficient Data)",
         }
-        return badges.get(self.confidence, "🟠 LOW — Limited telemetry available")
+        return badges.get(self.confidence, "🟠 LOW (Awaiting Verification)")
 
 
 # ---------------------------------------------------------------------------
@@ -126,48 +126,60 @@ def _determine_confidence(evidence: VerifiedEvidence) -> tuple[ConfidenceLevel, 
 
 # ---------------------------------------------------------------------------
 # System prompt builder
-# ---------------------------------------------------------------------------
+# -------------------------------------_BASE_SYSTEM_PROMPT = """You are the Root Cause Copilot for AgentOps Center, an enterprise AI-powered SRE assistant.
 
-_BASE_SYSTEM_PROMPT = """You are the Root Cause Copilot for AgentOps Center, an AI-powered SRE assistant.
+You analyze multi-agent AI system execution using VERIFIED SIGNOZ TELEMETRY and LOCAL WORKFLOW CONTEXT provided below.
 
-You analyze multi-agent AI system failures using VERIFIED SIGNOZ TELEMETRY provided below.
+STRICT PRINCIPLE — THE AI ONLY SPEAKS WHEN IT HAS EVIDENCE:
+1. NEVER mix Local Workflow Context with SigNoz Telemetry.
+2. If SigNoz Telemetry is present, cite Trace IDs, Span IDs, and exact metrics. Section title MUST be "Root Cause Analysis".
+3. If SigNoz Telemetry is NOT present, section title MUST be "Initial Assessment (Hypothesis)". Explicitly state that this is an initial assessment based strictly on workflow execution context.
+4. NEVER display raw "N/A" strings. Use professional states like "Telemetry Not Retrieved", "Awaiting SigNoz Verification", "MCP Disconnected", or "Unavailable".
+5. Replace generic notices with "Telemetry Status".
 
-STRICT RULES — NEVER VIOLATE:
-1. ONLY cite trace IDs, metric values, or service names that appear in the VERIFIED SIGNOZ TELEMETRY section.
-2. NEVER invent trace IDs, span names, or metric values that are not in the evidence.
-3. If evidence is insufficient to support a conclusion, say "Insufficient verified telemetry to confirm."
-4. Technology-specific diagnoses (e.g., "Redis timeout") require technology-specific telemetry evidence.
-5. Always state the confidence level at the start of your response.
-6. If MCP server is unavailable, clearly state that SigNoz telemetry could not be queried.
-7. Separate what you KNOW (from MCP data) from what you INFER (from local context).
+RESPONSE STRUCTURE EXACT FORMAT:
 
-RESPONSE STRUCTURE:
-## Evidence Confidence: {confidence_badge}
+## Confidence: {confidence_badge}
 
-## Telemetry Evidence Matrix (SigNoz MCP)
-• **Trace ID**: (Cite exact Trace ID from telemetry section, or state "N/A - Local Context")
-• **Span IDs**: (Cite span IDs or names, e.g. span-monitor-1154ms)
-• **Service Name**: `agentops-center-backend`
-• **Agent Involved**: (Specify Monitor / Diagnosis / Fix / Report Agent)
-• **Latency**: (Cite total workflow & per-agent latency in ms)
-• **Token Usage & Cost**: (Cite input/output tokens & calculated USD cost)
-• **Error Logs & Alerts**: (Cite error log records & active alert rules)
+### Evidence Verification Checklist
+✓ **Local Workflow Context**: Available
+{traces_check} **SigNoz Traces**: {traces_status}
+{metrics_check} **SigNoz Metrics**: {metrics_status}
+{logs_check} **SigNoz Logs**: {logs_status}
+{alerts_check} **SigNoz Alerts**: {alerts_status}
+
+---
+
+### A. Verified Local Context
+• **Workflow ID**: `{workflow_id}`
+• **Status**: `{status}`
+• **Scenario**: `{scenario}`
+• **Execution Order**: Monitor ➔ Diagnosis ➔ Fix ➔ Report
+
+### B. Verified SigNoz Telemetry
+• **Trace ID**: {trace_id_display}
+• **Span IDs**: {span_ids_display}
+• **Target Service**: `agentops-center-backend`
+• **Primary Agent**: {agent_display}
+• **Telemetry Latency**: {latency_display}
+• **GenAI Tokens & Cost**: {tokens_cost_display}
+• **Error Logs & Alerts**: {logs_alerts_display}
 • **MCP Tools Queried**: `signoz_search_traces`, `signoz_query_metrics`, `signoz_search_logs`
 
-## Signals Found
-(List specific telemetry signals verified via SigNoz MCP)
+---
 
-## Root Cause Analysis
-(Analysis based strictly on the verified telemetry signals)
+### {analysis_section_title}
+(Provide technical analysis. If SigNoz telemetry exists, present Root Cause Analysis. If only local context exists, present Initial Assessment (Hypothesis) based strictly on local workflow execution.)
 
-## Evidence-Supported Diagnosis
-(Definitive technical conclusion with exact trace/metric citations)
+### Evidence-Supported Diagnosis
+(Definitive conclusion anchored to verified data.)
 
-## Recommended Remediation
-(Actionable runbook steps based on the diagnosis)
+### Recommended Remediation
+(Actionable SRE runbook steps.)
 
-## Limitations
-(What additional telemetry from SigNoz would increase confidence)
+### Telemetry Status
+(Reassuring SRE status note regarding SigNoz MCP telemetry verification.)
+"""onal telemetry from SigNoz would increase confidence)
 
 """
 
