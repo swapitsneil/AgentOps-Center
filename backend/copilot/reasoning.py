@@ -96,7 +96,7 @@ def _determine_confidence(evidence: VerifiedEvidence) -> tuple[ConfidenceLevel, 
     has_logs = evidence.error_log_count > 0
     has_alerts = len(evidence.active_alerts) > 0
 
-    if (has_traces and (has_logs or has_alerts or has_metrics)) or (has_logs and (has_traces or has_metrics or has_alerts or len(evidence.signals) >= 2)):
+    if (has_traces and (has_logs or has_alerts or has_metrics)) or (has_logs and (has_traces or has_metrics or has_alerts or len(evidence.signals) >= 2)) or (evidence.mcp_available and len(evidence.signals) >= 2):
         return (
             ConfidenceLevel.HIGH,
             f"Telemetry verified from SigNoz: traces={evidence.trace_count}, "
@@ -115,7 +115,7 @@ def _determine_confidence(evidence: VerifiedEvidence) -> tuple[ConfidenceLevel, 
     if evidence.mcp_available and evidence.trace_count == 0:
         return (
             ConfidenceLevel.LOW,
-            "MCP server connected but returned limited trace data."
+            "MCP server connected but returned limited telemetry data."
         )
 
     return (

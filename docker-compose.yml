@@ -46,7 +46,7 @@ services:
   # ClickHouse — SigNoz's storage backend
   # ─────────────────────────────────────────────────────────
   clickhouse:
-    image: clickhouse/clickhouse-server:23.7.3-alpine
+    image: clickhouse/clickhouse-server:24.1.2-alpine
     container_name: agentops-clickhouse
     hostname: clickhouse
     networks: [agentops]
@@ -69,7 +69,24 @@ services:
         hard: 262144
 
   # ─────────────────────────────────────────────────────────
-  # SigNoz Query Service
+  # SigNoz Schema Migrator — Official Release (v0.144.6)
+  # ─────────────────────────────────────────────────────────
+  schema-migrator:
+    image: signoz/signoz-schema-migrator:v0.144.6
+    container_name: agentops-schema-migrator
+    hostname: schema-migrator
+    networks: [agentops]
+    command: ["sync", "--dsn", "tcp://clickhouse:9000"]
+    environment:
+      ENABLE_LOGS_V2: "true"
+      ENABLE_TRACES_V3: "true"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    restart: on-failure
+
+  # ─────────────────────────────────────────────────────────
+  # SigNoz Query Service — Official Release (latest)
   # ─────────────────────────────────────────────────────────
   signoz-query-service:
     image: signoz/query-service:latest
@@ -82,8 +99,8 @@ services:
     volumes:
       - sqlite-data:/var/lib/signoz
     environment:
-      ClickHouseUrl: tcp://clickhouse:9000
-      STORAGE: clickhouse
+      SIGNOZ_TELEMETRYSTORE_PROVIDER: clickhouse
+      SIGNOZ_TELEMETRYSTORE_CLICKHOUSE_DSN: tcp://clickhouse:9000
       GODEBUG: netdns=go
       TELEMETRY_ENABLED: "true"
       DEPLOYMENT_TYPE: docker-standalone-amd
@@ -98,7 +115,7 @@ services:
       retries: 5
 
   # ─────────────────────────────────────────────────────────
-  # SigNoz Frontend
+  # SigNoz Frontend — Official Release (latest)
   # ─────────────────────────────────────────────────────────
   signoz-frontend:
     image: signoz/frontend:latest
@@ -111,10 +128,10 @@ services:
     restart: unless-stopped
 
   # ─────────────────────────────────────────────────────────
-  # OpenTelemetry Collector — receives spans from backend
+  # OpenTelemetry Collector — Official Release (v0.144.6)
   # ─────────────────────────────────────────────────────────
   otel-collector:
-    image: signoz/signoz-otel-collector:0.102.0
+    image: signoz/signoz-otel-collector:v0.144.6
     container_name: agentops-otel-collector
     hostname: otel-collector
     networks: [agentops]
@@ -133,11 +150,6 @@ services:
       - "4318:4318"   # OTLP HTTP
       - "8888:8888"   # Prometheus metrics (collector self-monitoring)
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:13133/"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   # ─────────────────────────────────────────────────────────
   # AgentOps Center Backend (FastAPI + LangGraph)
@@ -151,7 +163,7 @@ services:
     networks: [agentops]
     depends_on:
       otel-collector:
-        condition: service_healthy
+        condition: service_started
     env_file:
       - .env
     environment:
