@@ -244,9 +244,59 @@ class ReasoningEngine:
                 evidence=evidence,
             )
 
-        # Build system prompt
+        # Extract checklist and display fields from evidence
+        traces_check = "✓" if evidence.trace_count > 0 else "✗"
+        traces_status = f"Captured ({evidence.trace_count} traces)" if evidence.trace_count > 0 else ("Telemetry Not Retrieved" if not evidence.mcp_available else "Zero Traces Returned")
+
+        metrics_check = "✓" if (evidence.token_metrics or evidence.cost_metrics) else "✗"
+        metrics_status = "Captured (Tokens & Cost USD)" if (evidence.token_metrics or evidence.cost_metrics) else "Telemetry Not Retrieved"
+
+        logs_check = "✓" if evidence.error_log_count > 0 else "✗"
+        logs_status = f"Captured ({evidence.error_log_count} Error Records)" if evidence.error_log_count > 0 else "No Error Logs Captured"
+
+        alerts_check = "✓" if evidence.active_alerts else "✗"
+        alerts_status = f"Active ({len(evidence.active_alerts)} Rules)" if evidence.active_alerts else "No Active Alerts"
+
+        ctx_data = evidence.local_workflow_context or {}
+        workflow_id = ctx_data.get("workflow_id", "wf-latest")
+        status_val = str(ctx_data.get("status", "unknown")).upper()
+        scenario_val = ctx_data.get("scenario", "Production Incident Investigation")
+
+        trace_id_display = evidence.recent_traces[0].trace_id[:16] + "..." if evidence.recent_traces else "Awaiting SigNoz Verification"
+        span_ids_display = f"{evidence.trace_count} Spans Captured" if evidence.trace_count > 0 else "Telemetry Not Retrieved"
+        agent_display = "Monitor / Diagnosis / Fix / Report Agent Fleet"
+        latency_display = f"{evidence.recent_traces[0].total_duration_ms:.0f}ms" if evidence.recent_traces else "Measured via Workflow Execution"
+        tokens_cost_display = "GenAI Tokens & Cost USD Tracked" if (evidence.token_metrics or evidence.cost_metrics) else "Telemetry Not Retrieved"
+        logs_alerts_display = f"{evidence.error_log_count} Exceptions Logged" if evidence.error_log_count > 0 else "No Exception Spans"
+        analysis_title = "Root Cause Analysis" if (evidence.has_real_telemetry() and evidence.mcp_available) else "Initial Assessment (Hypothesis)"
+
         badge = self._make_confidence_badge(confidence, evidence.mcp_available)
-        system_prompt = _BASE_SYSTEM_PROMPT.format(confidence_badge=badge)
+
+        try:
+            system_prompt = _BASE_SYSTEM_PROMPT.format(
+                confidence_badge=badge,
+                traces_check=traces_check,
+                traces_status=traces_status,
+                metrics_check=metrics_check,
+                metrics_status=metrics_status,
+                logs_check=logs_check,
+                logs_status=logs_status,
+                alerts_check=alerts_check,
+                alerts_status=alerts_status,
+                workflow_id=workflow_id,
+                status=status_val,
+                scenario=scenario_val,
+                trace_id_display=trace_id_display,
+                span_ids_display=span_ids_display,
+                agent_display=agent_display,
+                latency_display=latency_display,
+                tokens_cost_display=tokens_cost_display,
+                logs_alerts_display=logs_alerts_display,
+                analysis_section_title=analysis_title,
+            )
+        except Exception as err:
+            logger.error("Error formatting system prompt: %s", err)
+            system_prompt = _BASE_SYSTEM_PROMPT.replace("{confidence_badge}", badge)
 
         if confidence == ConfidenceLevel.HIGH:
             system_prompt += _HIGH_CONFIDENCE_ADDENDUM
