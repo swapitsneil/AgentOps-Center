@@ -183,7 +183,9 @@ class SigNozMCPClient:
         self.mcp_candidates = [
             url.rstrip("/") for url in [
                 env_url,
+                "http://signoz-mcp:8000/mcp",
                 "http://signoz-mcp-server:8080/mcp",
+                "http://localhost:18080/mcp",
                 "http://localhost:8080/mcp",
                 "http://signoz-query-service:8080/mcp",
                 "http://localhost:3301/mcp",
