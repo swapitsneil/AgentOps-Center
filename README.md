@@ -393,7 +393,13 @@ GROQ_API_KEY=your_api_key
 or
 Any api keys
 
-Start everything:
+Start everything via **Foundry** (Official SigNoz Deployment):
+
+```bash
+foundryctl cast -f casting.yaml
+```
+
+Or via standard Docker Compose:
 
 ```bash
 docker compose up -d
