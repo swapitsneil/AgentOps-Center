@@ -420,6 +420,54 @@ class SigNozMCPClient:
                 except ValueError:
                     pass
 
+        return traces if traces else await self._fallback_search_traces(service_name, start_ms, end_ms, limit, filter_error)
+
+    async def _fallback_search_traces(
+        self, service_name: str, start_ms: int, end_ms: int, limit: int, filter_error: bool
+    ) -> list[MCPTrace]:
+        """Direct fallback query to ClickHouse telemetry store when MCP tool text response does not yield traces."""
+        traces: list[MCPTrace] = []
+        try:
+            ch_url = os.getenv("CLICKHOUSE_URL", "http://clickhouse:8123")
+            err_clause = "AND has_error = true" if filter_error else ""
+            sql = (
+                f"SELECT trace_id, span_id, name, serviceName, duration_nano, has_error "
+                f"FROM signoz_traces.signoz_index_v3 "
+                f"WHERE serviceName = '{service_name}' {err_clause} "
+                f"ORDER BY timestamp DESC LIMIT {limit} FORMAT JSON"
+            )
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(f"{ch_url}/?query={sql}")
+                if resp.status_code == 200:
+                    data = resp.json().get("data", [])
+                    seen_traces: dict[str, MCPTrace] = {}
+                    for row in data:
+                        tid = str(row.get("trace_id", ""))
+                        if not tid:
+                            continue
+                        if tid not in seen_traces:
+                            seen_traces[tid] = MCPTrace(
+                                trace_id=tid,
+                                root_service=str(row.get("serviceName", service_name)),
+                                total_duration_ms=round(float(row.get("duration_nano", 0)) / 1_000_000, 2),
+                                error=bool(row.get("has_error", False)),
+                                span_count=0,
+                                spans=[]
+                            )
+                        sid = str(row.get("span_id", ""))
+                        seen_traces[tid].span_count += 1
+                        seen_traces[tid].spans.append(MCPSpan(
+                            span_id=sid,
+                            trace_id=tid,
+                            service_name=str(row.get("serviceName", service_name)),
+                            operation_name=str(row.get("name", "")),
+                            duration_ms=round(float(row.get("duration_nano", 0)) / 1_000_000, 2),
+                            status="error" if row.get("has_error") else "ok"
+                        ))
+                    traces = list(seen_traces.values())
+        except Exception as exc:
+            logger.warning("Trace query fallback failed: %s", exc)
+
         return traces
 
     async def get_trace_details(self, trace_id: str) -> MCPTrace | MCPUnavailable:

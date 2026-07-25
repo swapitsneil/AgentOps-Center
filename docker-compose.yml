@@ -105,6 +105,9 @@ services:
       TELEMETRY_ENABLED: "true"
       DEPLOYMENT_TYPE: docker-standalone-amd
       NO_AUTH: "true"
+      AUTH_MODE: "none"
+      ENABLE_TRACES_V3: "true"
+      ENABLE_LOGS_V2: "true"
     ports:
       - "8085:8085"  # Internal API
     restart: unless-stopped
@@ -225,7 +228,7 @@ services:
       # Point to SigNoz query service HTTP API inside the Docker network
       SIGNOZ_URL: http://signoz-query-service:8080
       # SIGNOZ_API_KEY is optional for self-hosted — set in .env if needed
-      SIGNOZ_API_KEY: ${SIGNOZ_API_KEY:-signoz-local-key}
+      SIGNOZ_API_KEY: ${SIGNOZ_API_KEY:-5nngjlIbhGwPVEFQURXb5PU95SCFHuu1eSOVxxB5IZg=}
       LOG_LEVEL: info
     ports:
       - "18080:8000"  # MCP HTTP endpoint at http://localhost:18080/mcp
