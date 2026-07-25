@@ -3,7 +3,7 @@
 > **AI Operations Center for Multi-Agent Systems powered by OpenTelemetry, SigNoz & Model Context Protocol (MCP)**
 
 Observe. Debug. Chaos Test. Explain.  
-Gain end-to-end visibility into your AI agents using **real telemetry**, not guesses.
+Gain end-to-end visibility into autonomous AI agent workflows using **real telemetry, evidence-backed reasoning, and official SigNoz observability infrastructure**.
 
 <p align="center">
 
@@ -13,8 +13,8 @@ Gain end-to-end visibility into your AI agents using **real telemetry**, not gue
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi)
 ![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-success?style=for-the-badge)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Instrumented-orange?style=for-the-badge)
-![SigNoz](https://img.shields.io/badge/SigNoz-Observability-purple?style=for-the-badge)
-[![Medium Blog](https://img.shields.io/badge/Medium-Article-black?style=for-the-badge&logo=medium)](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7)
+![SigNoz](https://img.shields.io/badge/SigNoz-v0.144.6-purple?style=for-the-badge)
+[![Medium Blog](https://img.shields.io/badge/Medium-Technical%20Article-black?style=for-the-badge&logo=medium)](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7)
 [![Twitter Follow](https://img.shields.io/badge/Twitter-@swappingcodes-1DA1F2?style=for-the-badge&logo=x)](https://x.com/swappingcodes)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/swapnil-nicolson-dadel/)
 
@@ -22,806 +22,284 @@ Gain end-to-end visibility into your AI agents using **real telemetry**, not gue
 
 ---
 
-**Medium Technical Article** - [Read Hackathon Article](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7)
-
-**X** - [@swappingcodes](https://x.com/swappingcodes)
-
-**LinkedIn** - 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/)
-
----
-
 ## 🌐 Live Deployment & Media Links
 
-| Resource | Link / URL | Host / Platform | Status |
-| :--- | :--- | :--- | :--- |
+| Resource | Link / URL | Platform | Status |
+| :--- | :--- | :--- | :---: |
 | **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
-| **Backend Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
-| **SigNoz MCP Bridge** | ⚙️ `http://agentops-signoz-mcp:10000/mcp` | **Render Private Net** | 🟢 Active |
-| **API Documentation** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
+| **Backend API Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
+| **Backend API Docs** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
+| **Medium Article** | 📝 [Read Technical Deep Dive](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7) | **Medium** | 🟢 Published |
+| **X / Twitter** | 🐦 [@swappingcodes](https://x.com/swappingcodes) | **X** | 🟢 Active |
+| **LinkedIn Profile** | 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/) | **LinkedIn** | 🟢 Connected |
 
 ---
 
-# Why AgentOps Center?
+## 💡 Problem Statement
 
-Large Language Model applications are rapidly evolving into **multi-agent systems**.
+Large Language Model (LLM) applications are rapidly transitioning from single-prompt scripts into **complex multi-agent systems**. Autonomous agents break down tasks, call external APIs, query databases, and pass state between specialized nodes.
 
-Unfortunately...
+However, traditional APM tools were designed for REST APIs and microservices—not non-deterministic AI agent loops. When an AI workflow fails or degrades, engineers struggle to answer critical questions:
 
-Traditional observability platforms were built for APIs and microservices—not autonomous AI agents.
+- **Which agent node failed or looped indefinitely?**
+- **Which external tool or API returned rate limits or errors?**
+- **Why did a workflow take 45 seconds when no exception was thrown?**
+- **How much money in token cost was consumed by each sub-agent?**
+- **Is the Root Cause Copilot providing verified facts or hallucinating?**
 
-When an AI workflow fails, engineers often struggle to answer critical questions:
-
-- Which agent failed?
-- Which tool caused the issue?
-- How much did the failed execution cost?
-- Why did the workflow take 45 seconds to finish?
-
----
-
-### 🏆 Why SigNoz is the Single Source of Truth
-
-AgentOps Center does **NOT** rely on LLM guesses or unverified prompt context. **SigNoz is the single source of truth** for all incident response, performance profiling, and debugging:
-
-1. **Native OpenTelemetry Instrumentation (`gen_ai.*`)**: Every agent node execution, model call, token count, and tool execution emits OTel spans directly to SigNoz ClickHouse via OTLP gRPC (`port 4317`).
-2. **SigNoz MCP Tool Server Sidecar**: The Root Cause Copilot queries SigNoz telemetry over MCP JSON-RPC 2.0 (`signoz_search_traces`, `signoz_query_metrics`, `signoz_search_logs`).
-3. **Evidence-Driven Confidence Badges**: Copilot answers are strictly graded (`🟢 HIGH`, `🟡 MEDIUM`, `🟠 LOW`) based on verified Trace IDs, Span IDs, error logs, and metrics returned by SigNoz.
-4. **Reproducible Foundry Deployment**: Includes `casting.yaml` and `casting.yaml.lock` for 1-step Foundry deployment (`foundryctl cast -f casting.yaml`).
+Most AI monitoring tools attempt to solve this by storing unverified prompt logs or asking LLMs to guess root causes without real system context.
 
 ---
 
-- Which prompt produced the incorrect response?
-- Where is the evidence proving the diagnosis?
+## ✨ The Solution: Telemetry-Backed Agent Operations
 
-Most AI debugging tools rely on assumptions.
+**AgentOps Center replaces guesswork with empirical telemetry.**
 
-**AgentOps Center replaces assumptions with telemetry.**
-
-Every LLM request, tool invocation, workflow transition, latency spike, token usage, and runtime error is instrumented using **OpenTelemetry**, stored inside **SigNoz**, and queried through the **SigNoz Model Context Protocol (MCP)** to produce evidence-backed Root Cause Analysis.
-
----
-
-# Why This Project?
-
-AgentOps Center demonstrates what modern AI operations should look like.
-
-Instead of treating AI agents like black boxes, it treats them exactly like distributed cloud services.
-
-Every decision becomes observable.
-
-Every failure becomes traceable.
-
-Every diagnosis is backed by real telemetry.
-
----
-
-# Architecture
+Every LLM call, agent node transition, tool execution, token count, latency measurement, and runtime exception is instrumented using **OpenTelemetry GenAI Semantic Conventions (`gen_ai.*`)**, exported to **SigNoz ClickHouse (`v0.144.6`)**, and queried by an **Evidence Engine** over the **SigNoz Model Context Protocol (MCP)**.
 
 ```
-                                User
-                                 │
-                                 ▼
-    ┌─────────────────────────────────────────────────────────┐
-    │                   Next.js Dashboard                     │
-    │                                                         │
-    │  Command Center • Timeline • Copilot • Chaos Engine     │
-    └────────────────────────────┬────────────────────────────┘
-                                 │ HTTP / REST & SSE
-                                 ▼
-    ┌─────────────────────────────────────────────────────────┐
-    │                    FastAPI Backend                      │
-    │                                                         │
-    │  • REST API & SSE Router                                │
-    │  • OTel Auto/Manual Instrumentation                     │
-    │  • SigNoz MCP Client                                    │
-    │  • Chaos Fault Injector                                 │
-    └──────────────┬───────────────────────────▲──────────────┘
-                   │                           │
-                   ▼                           │ MCP JSON-RPC
-    ┌─────────────────────────────┐   ┌────────┴─────────────┐
-    │  LangGraph 4-Agent Fleet    │   │  SigNoz MCP Server   │
-    │                             │   │  (Sidecar Container) │
-    │  Monitor ──► Diagnosis      │   └────────▲─────────────┘
-    │     │           │           │            │
-    │     ▼           ▼           │            │ REST Query API
-    │    Fix   ──►  Report        │            │
-    └──────────────┬──────────────┘   ┌────────┴─────────────┐
-                   │ OTLP gRPC (4317) │    SigNoz Platform   │
-                   ▼                  │   (ClickHouse Engine)│
-    ┌─────────────────────────────┐   │                      │
-    │   OTel Collector Pipeline   ├──►│ • Traces  • Metrics  │
-    └─────────────────────────────┘   │ • Logs    • Alerts   │
-                                      └──────────────────────┘
-
-
+                                  User / UI
+                                      │
+                                      ▼
+                        ┌───────────────────────────┐
+                        │    Next.js 15 Frontend    │
+                        │    (Vercel Production)    │
+                        └─────────────┬─────────────┘
+                                      │ REST / SSE
+                                      ▼
+                        ┌───────────────────────────┐
+                        │    FastAPI + LangGraph    │
+                        │    (Render Production)    │
+                        └──────┬─────────────┬──────┘
+                               │             │
+                    OTLP gRPC  │             │ MCP JSON-RPC
+                    (Port 4317)│             │ (Port 18080)
+                               ▼             ▼
+                    ┌──────────────┐   ┌────────────────────┐
+                    │OTel Collector│   │ SigNoz MCP Server  │
+                    └──────┬───────┘   └─────────┬──────────┘
+                           │                     │
+                           ▼                     │
+                    ┌──────────────┐             │ HTTP API
+                    │ ClickHouse   │             │ (Port 8080)
+                    │ (v24.1.2)    │             │
+                    └──────┬───────┘             │
+                           │                     │
+                           ▼                     │
+                    ┌────────────────────────────┴─────┐
+                    │       SigNoz Query Service       │
+                    │            (v0.144.6)            │
+                    └──────────────────────────────────┘
 ```
 
 ---
 
-# End-to-End Execution Flow
+## 🏆 Key Architectural Highlights
+
+### 1. Native OpenTelemetry GenAI Instrumentation
+- Full adherence to standard OTel GenAI conventions (`gen_ai.system`, `gen_ai.operation.name`, `gen_ai.request.model`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens`, `gen_ai.usage.cost_usd`).
+- Custom span attributes for agent transitions (`agent.name`, `agent.node`, `agent.workflow_id`, `agent.transition.from`, `agent.transition.to`).
+- Rich tool execution spans tracking exact parameters, duration, and error status (`tool.name`, `tool.input`, `tool.output`, `tool.duration_ms`).
+
+### 2. SigNoz MCP Tool Integration
+The **Root Cause Copilot** connects to the official `signoz/signoz-mcp-server:latest` via HTTP JSON-RPC 2.0. The Copilot invokes official SigNoz tools:
+- `signoz_search_traces`: Fetches exact trace hierarchies and span execution times.
+- `signoz_search_logs`: Queries structured error logs and exception stack traces.
+- `signoz_query_metrics`: Retrieves aggregated token consumption, cost metrics, and duration histograms.
+- `signoz_list_alert_rules`: Evaluates active observability alerts.
+
+### 3. Evidence Engine & Grounded Confidence Badging
+The Copilot never exposes raw unverified data or hallucinations to the user. The **Evidence Engine**:
+1. Invokes SigNoz MCP tools to gather empirical telemetry.
+2. Constructs a `VerifiedEvidence` data structure.
+3. Automatically grades the response with evidence badges:
+   - **`🟢 HIGH Confidence`**: Verified by 2+ real MCP telemetry signals (traces/logs/metrics).
+   - **`🟡 MEDIUM Confidence`**: Partial telemetry signals verified.
+   - **`🟠 LOW Confidence`**: Unverified or local fallback context only.
+
+### 4. Chaos Engineering & Incident Injection
+Built-in Chaos Engine allows on-demand fault injection during agent workflow runs to evaluate SigNoz observability in real-time:
+- **`LLM_TIMEOUT`**: Simulates provider timeout (504).
+- **`LLM_ERROR`**: Injects 429 Rate Limiting / 500 Server Errors.
+- **`TOOL_FAILURE`**: Forces tool execution failure.
+- **`SLOW_RESPONSE`**: Introduces latency delays (2s - 8s).
+- **`AGENT_CRASH`**: Injects unhandled agent exceptions.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies Used |
+| :--- | :--- |
+| **Agent Orchestration** | LangGraph, LangChain, Python 3.11+ |
+| **Backend API** | FastAPI, Uvicorn, AsyncIO, SSE (Server-Sent Events) |
+| **LLM Router** | LiteLLM (Groq `llama-3.1-8b-instant`, OpenAI `gpt-4o-mini`) |
+| **Observability SDK** | OpenTelemetry Python SDK, OpenInference LangChain Instrumentor |
+| **Telemetry Pipeline** | SigNoz OTel Collector `v0.144.6`, ClickHouse `24.1.2-alpine` |
+| **Query Engine** | SigNoz Query Service `v0.144.6` |
+| **Protocol Bridge** | SigNoz MCP Server `v0.9.0` (Model Context Protocol HTTP transport) |
+| **Frontend UI** | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Lucide Icons |
+| **Deployment** | SigNoz Foundry (`casting.yaml`), Docker Compose, Vercel, Render |
+
+---
+
+## 📁 Repository Structure
 
 ```text
-Incident Trigger
-        │
-        ▼
-LangGraph executes 4-agent workflow
-        │
-        ▼
-Every agent emits OpenTelemetry spans
-        │
-        ▼
-OTLP Collector exports telemetry
-        │
-        ▼
-SigNoz stores traces, metrics & logs
-        │
-        ▼
-Copilot queries SigNoz MCP
-        │
-        ▼
-Evidence Engine verifies telemetry
-        │
-        ▼
-AI generates Root Cause Analysis
-        │
-        ▼
-Confidence Score assigned
-(HIGH / MEDIUM / LOW)
-```
----
-
-```
- 1. Incident Trigger        ➜  User clicks "Trigger Incident Response" in Next.js UI
- 2. Multi-Agent Run         ➜  LangGraph executes Monitor ➔ Diagnosis ➔ Fix ➔ Report
- 3. OTel Instrumentation    ➜  Every agent decision emits gen_ai.* spans & metrics
- 4. OTLP Export             ➜  Traces streamed via OTLP gRPC to OTel Collector (4317)
- 5. SigNoz Storage          ➜  Collector indexes spans into ClickHouse tables
- 6. Copilot MCP Query       ➜  Root Cause Copilot invokes SigNoz MCP tool calls
- 7. Evidence Verification   ➜  EvidenceEngine validates traces, logs & APM metrics
- 8. Confidence Scoring      ➜  ReasoningEngine assigns badge (🟢 HIGH / 🟡 MEDIUM / 🟠 LOW)
- 9. Postmortem Output       ➜  Copilot streams evidence-supported RCA response back to UI
-
-```
-
----
-
-# Core Features
-
-## Multi-Agent Incident Response
-
-- 4-agent LangGraph workflow
-- Sequential orchestration
-- Workflow replay
-- Agent state transitions
-- Live execution tracking
-
----
-
-## OpenTelemetry Native
-
-Every execution automatically generates:
-
-- LLM spans
-- Tool spans
-- Agent spans
-- Workflow spans
-- Cost metrics
-- Token metrics
-- Error events
-
-Using official **GenAI Semantic Conventions**.
-
----
-
-## Root Cause Copilot
-
-Unlike traditional AI assistants...
-
-The Copilot **does not hallucinate** telemetry.
-
-Instead it:
-
-- Connects to SigNoz MCP
-- Queries traces
-- Retrieves metrics
-- Searches logs
-- Builds verified evidence
-- Assigns confidence levels
-
-Every diagnosis is backed by observability data.
-
----
-
-## Chaos Engineering
-
-Inject failures into running AI workflows.
-
-Supported scenarios include:
-
-- LLM Timeout
-- Tool Failure
-- Slow Response
-- Invalid Output
-- Agent Crash
-- LLM Exception
-
-Observe how failures propagate through traces.
-
----
-
-## Cost Intelligence
-
-Track:
-
-- Input Tokens
-- Output Tokens
-- USD Cost
-- Latency
-- Cost Per Agent
-- Cost Per Workflow
-- Total Runtime
-
----
-
-# Why SigNoz?
-
-SigNoz is the observability backbone of AgentOps Center.
-
-Instead of relying on locally cached context, the platform retrieves live telemetry using the **SigNoz MCP Server**.
-
-The Copilot queries:
-
-- Distributed traces
-- Metrics
-- Logs
-- Services
-- Time-series data
-
-Every recommendation references actual observability evidence.
-
----
-
-# Application Screenshots
-
-## Command Center
-
-Real-time monitoring dashboard displaying active workflows, latency, AI cost, agent status, and operational metrics.
-
-![Command Center](images/command_center.png)
-
----
-
-## Agent Timeline
-
-Replay every workflow execution with Gantt-style visualization across all agents.
-
-![Timeline](images/agent_timeline.png)
-
----
-
-## Root Cause Copilot
-
-Evidence-backed AI assistant powered by SigNoz MCP.
-
-![Copilot](images/root_cause_copilot.png)
-
----
-
-## Cost Intelligence
-
-Monitor token usage and LLM cost in real time.
-
-![Cost](images/cost_intelligence.png)
-
----
-
-## Chaos Engineering
-
-Inject production-style failures with a single click.
-
-![Chaos](images/chaos_engine.png)
-
----
-
-# Tech Stack
-
-| Layer | Technologies |
-|---------|--------------|
-| Frontend | Next.js 15, React, Tailwind CSS |
-| Backend | FastAPI, Python |
-| AI Orchestration | LangGraph |
-| Observability | OpenTelemetry |
-| Telemetry Storage | SigNoz + ClickHouse |
-| AI Diagnostics | SigNoz MCP |
-| Containerization | Docker Compose |
-| Database | ClickHouse |
-| Collector | OpenTelemetry Collector |
-
----
-
-# Repository Structure
-
-```text
-AgentOps-Center/
-
+.
 ├── backend/
 │   ├── agents/
-│   ├── copilot/
-│   ├── instrumentation/
+│   │   └── graph.py          # LangGraph Multi-Agent StateGraph (Monitor, Diagnosis, Fix, Report)
+│   ├── api/
+│   │   ├── copilot.py        # Copilot SSE streaming endpoints (/api/copilot/ask)
+│   │   ├── runs.py           # Workflow execution endpoints (/api/runs/trigger)
+│   │   └── metrics.py        # Telemetry metrics endpoints
 │   ├── chaos/
+│   │   └── injector.py       # Chaos Engineering fault injection engine
+│   ├── copilot/
+│   │   ├── evidence_engine.py# Evidence Engine (gathers & structures MCP telemetry)
+│   │   └── reasoning.py      # LLM reasoning engine & confidence grading logic
+│   ├── instrumentation/
+│   │   ├── setup.py          # OTel TracerProvider & MeterProvider initialization
+│   │   ├── agent_spans.py    # OTel GenAI semantic convention context managers
+│   │   └── cost_tracker.py   # Token usage counter & cost calculation
 │   ├── mcp/
-│   └── main.py
-│
+│   │   └── client.py         # SigNoz MCP HTTP JSON-RPC 2.0 Client
+│   ├── Dockerfile            # Container definition for FastAPI backend
+│   └── main.py               # FastAPI application entrypoint
 ├── frontend/
-│
-├── clickhouse/
-│
+│   ├── src/
+│   │   ├── app/              # Next.js 15 App Router pages (Dashboard, Copilot, Chaos, Timeline)
+│   │   └── components/       # UI Components & Live Telemetry Viewers
+│   └── Dockerfile            # Container definition for Next.js frontend
 ├── otel-collector/
-│
-├── images/
-│
-├── docs/
-│
-├── docker-compose.yml
-│
-└── README.md
+│   └── config.yaml           # OTel Collector pipeline configuration (OTLP gRPC -> ClickHouse)
+├── scratch/
+│   └── smoke_tests.py        # End-to-end automated verification suite
+├── casting.yaml              # Official SigNoz Foundry deployment manifest
+├── casting.yaml.lock         # Foundry lockfile
+├── docker-compose.yml        # Full 9-container local stack definition
+├── requirements.txt          # Python dependencies
+└── README.md                 # Project documentation
 ```
 
 ---
 
-# Quick Start
+## 🚀 Quickstart & Local Development
 
-## Prerequisites
+### Prerequisites
+- **Docker Desktop** (with Docker Compose v2+)
+- **Python 3.11+**
+- **Node.js 18+** (optional, for local frontend development)
 
-- Docker
-- Docker Compose
-- Python 3.11+
-- Groq/OpenAI/OpenRouter API Key
-
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/swapitsneil/AgentOps-Center.git
-
 cd AgentOps-Center
+```
 
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env`:
+```bash
 cp .env.example .env
 ```
-
-Edit `.env`
-
+Provide at least one LLM provider API key in `.env`:
 ```env
-GROQ_API_KEY=your_api_key
+GROQ_API_KEY=your_groq_api_key_here
+# OR
+OPENAI_API_KEY=your_openai_api_key_here
 ```
-or
-Any api keys
 
-Start everything via **Foundry** (Official SigNoz Deployment):
+### 3. Start the Complete Docker Stack
+Start all 9 containers (ClickHouse, Zookeeper, OTel Collector, Query Service, Schema Migrator, Frontend UI, Backend API, SigNoz MCP Server, SigNoz UI):
+```bash
+docker compose up -d
+```
 
+### 4. Verify Container Health
+```bash
+docker compose ps
+```
+All services should be in state `running` or `healthy`:
+- **AgentOps Center UI**: `http://localhost:3000`
+- **Backend API**: `http://localhost:8000`
+- **SigNoz UI**: `http://localhost:8080`
+- **SigNoz MCP Server**: `http://localhost:18080/mcp`
+- **ClickHouse HTTP**: `http://localhost:8123`
+
+---
+
+## 🚢 SigNoz Foundry Deployment
+
+AgentOps Center includes an official SigNoz Foundry manifest (`casting.yaml`) for 1-step deployment:
+
+```yaml
+apiVersion: v1alpha1
+metadata:
+  name: agentops-center
+  version: "0.1.0"
+spec:
+  deployment:
+    mode: docker
+    flavor: compose
+    composeFile: ./docker-compose.yml
+```
+
+To deploy via Foundry:
 ```bash
 foundryctl cast -f casting.yaml
 ```
 
-Or via standard Docker Compose:
+---
+
+## 🧪 Running Automated Smoke Tests
+
+Verify end-to-end telemetry flow (Workflow execution ➔ OTel export ➔ ClickHouse persistence ➔ MCP retrieval ➔ Copilot reasoning with HIGH confidence):
 
 ```bash
-docker compose up -d
-```
----
-
-# OpenTelemetry Instrumentation
-
-AgentOps Center follows the OpenTelemetry GenAI Semantic Conventions to ensure standardized AI observability.
-
-Every workflow emits structured telemetry for:
-
-- LLM Requests
-- Tool Invocations
-- Agent Transitions
-- Workflow Execution
-- Cost Tracking
-- Token Usage
-- Errors & Exceptions
-
-Example span attributes:
-
-```json
-{
-  "gen_ai.system": "groq",
-  "gen_ai.operation.name": "chat",
-  "gen_ai.request.model": "llama-3.1-8b-instant",
-  "gen_ai.usage.input_tokens": 142,
-  "gen_ai.usage.output_tokens": 89,
-  "gen_ai.usage.cost_usd": 0.0000071,
-  "agent.name": "diagnosis_agent",
-  "agent.workflow_id": "wf-86785cb5",
-  "agent.node": "diagnosis"
-}
+python scratch/smoke_tests.py
 ```
 
-These traces are exported through the OpenTelemetry Collector and stored inside SigNoz for querying through MCP.
-
----
-
-# SigNoz MCP Integration
-
-AgentOps Center integrates directly with the **SigNoz Model Context Protocol (MCP) Server**.
-
-Instead of generating explanations from local context alone, the Root Cause Copilot queries live observability data using MCP.
-
-Supported MCP capabilities include:
-
-- Service Discovery
-- Trace Search
-- Metrics Query
-- Log Search
-- Time-Series Retrieval
-- Error Investigation
-
-Workflow:
-
+Expected output:
 ```text
-Root Cause Copilot
-        │
-        ▼
-SigNoz MCP Client
-        │
-        ▼
-JSON-RPC Request
-        │
-        ▼
-SigNoz MCP Server
-        │
-        ▼
-SigNoz Query Service
-        │
-        ▼
-ClickHouse
-        │
-        ▼
-Verified Evidence
-        │
-        ▼
-Evidence-Based Diagnosis
-```
+=======================================================
+SMOKE TEST SUMMARY RESULTS
+=======================================================
+Run #1: PASSED (wf-958c2184 | Spans: 2340 | Confidence: HIGH)
+Run #2: PASSED (wf-5dd5034a | Spans: 2915 | Confidence: HIGH)
+Run #3: PASSED (wf-064a9377 | Spans: 3559 | Confidence: HIGH)
 
-The Copilot assigns confidence based on telemetry availability:
-
-| Confidence | Meaning |
-|------------|---------|
-| 🟢 HIGH | Strong evidence from traces, logs and metrics |
-| 🟡 MEDIUM | Partial telemetry available |
-| 🟠 LOW | MCP connected but limited telemetry |
-| 🔴 NONE | MCP unavailable or telemetry missing |
-
----
-
-# API Endpoints
-
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/health` | Health status |
-| GET | `/api/runs` | List workflow runs |
-| POST | `/api/runs/trigger` | Trigger new workflow |
-| GET | `/api/runs/{id}` | Workflow details |
-| GET | `/api/timeline/{id}` | Agent execution timeline |
-| GET | `/api/metrics` | Cost & token analytics |
-| POST | `/api/copilot/ask` | Root Cause Copilot |
-| POST | `/api/chaos/inject` | Inject failures |
-
----
-
-# Demo Walkthrough
-
-The following steps demonstrate the complete AgentOps workflow.
-
-### Step 1
-
-Start the platform.
-
-```bash
-docker compose up -d
+ALL 3 SMOKE TEST RUNS PASSED CLEANLY!
 ```
 
 ---
 
-### Step 2
+## 📸 Interface Preview & Screenshots
 
-Open the Command Center.
+### Command Center Dashboard
+Overview of active workflows, total token consumption, estimated USD cost, and agent execution graph:
+![Command Center](images/command_center.png)
 
-```
-http://localhost:3000
-```
+### Root Cause Copilot
+Real-time SSE streaming copilot displaying verified SigNoz trace evidence and `🟢 HIGH Confidence` badges:
+![Root Cause Copilot](images/root_cause_copilot.png)
 
----
+### Agent Timeline & Span Hierarchy
+Detailed trace span visualization showing agent transition flow and sub-span durations:
+![Agent Timeline](images/agent_timeline.png)
 
-### Step 3
+### Chaos Engineering Control Plane
+Runtime fault injection interface for testing observability under simulated failures:
+![Chaos Engine](images/chaos_engine.png)
 
-Trigger a workflow.
-
-The LangGraph workflow executes:
-
-```
-Monitor Agent
-      ↓
-Diagnosis Agent
-      ↓
-Fix Agent
-      ↓
-Report Agent
-```
+### Cost & Token Intelligence
+Granular breakdown of input/output token usage and USD cost across monitor, diagnosis, fix, and report agents:
+![Cost Intelligence](images/cost_intelligence.png)
 
 ---
 
-### Step 4
+## 📄 License & Acknowledgements
 
-Observe OpenTelemetry traces flowing into SigNoz.
+This project is open-source under the [MIT License](LICENSE).
 
-Open:
-
-```
-http://localhost:8080
-```
-
-View:
-
-- Traces
-- Metrics
-- Logs
-- Cost
-- Services
-
----
-
-### Step 5
-
-Inject failures.
-
-Examples:
-
-- LLM Timeout
-- Slow Response
-- Tool Failure
-- Invalid Output
-- Agent Crash
-
-Observe new spans appearing automatically.
-
----
-
-### Step 6
-
-Open Root Cause Copilot.
-
-Ask:
-
-> Why did this workflow fail?
-
-The Copilot retrieves verified telemetry through SigNoz MCP before generating its explanation.
-
----
-
-# Testing
-
-The platform includes automated tests covering API functionality, workflow orchestration, MCP compatibility, Copilot behavior and Chaos Engineering.
-
-Verified test suites include:
-
-- API Tests
-- Workflow Tests
-- MCP Compatibility
-- Chaos Engine
-- Root Cause Copilot
-
-Example:
-
-```bash
-pytest tests -v
-```
-
-Example output:
-
-```
-51 PASSED
-0 FAILED
-100% PASS RATE
-```
-
----
-
-# Performance
-
-Release Candidate Verification:
-
-| Category | Status |
-|----------|--------|
-| Docker Services | ✅ Healthy |
-| MCP Integration | ✅ Connected |
-| OpenTelemetry | ✅ Instrumented |
-| Frontend | ✅ Operational |
-| Backend | ✅ Operational |
-| Chaos Engine | ✅ Verified |
-| API Tests | ✅ Passing |
-| Memory Leaks | ✅ None Detected |
-| Thread Blocking | ✅ None Detected |
-
----
-
-# Security
-
-AgentOps Center follows secure deployment practices.
-
-- Environment variables for secrets
-- No API keys committed
-- Non-root Docker containers
-- Explicit CORS configuration
-- Health checks for every service
-- Safe MCP authentication
-- Docker network isolation
-
----
-
-# Future Roadmap
-
-Planned improvements include:
-
-- Kubernetes deployment
-- Multi-tenant architecture
-- Slack & Microsoft Teams alerts
-- Distributed Agent Topology Graph
-- Auto-remediation workflows
-- Historical RCA comparison
-- Prompt version tracking
-- Fine-grained RBAC
-- Grafana integration
-- AI workflow benchmarking
-
----
-
-# Project Highlights
-
-✅ Multi-Agent AI Operations Platform
-
-✅ LangGraph Workflow Orchestration
-
-✅ OpenTelemetry GenAI Instrumentation
-
-✅ SigNoz Observability
-
-✅ SigNoz MCP Integration
-
-✅ Evidence-Based Root Cause Analysis
-
-✅ Chaos Engineering
-
-✅ Cost Intelligence
-
-✅ Dockerized Deployment
-
-✅ FastAPI + Next.js
-
----
-
-# Why This Project Matters
-
-As AI systems become increasingly autonomous, traditional monitoring approaches are no longer sufficient.
-
-AgentOps Center demonstrates how modern AI applications can adopt production-grade observability practices by combining:
-
-- Multi-Agent Orchestration
-- Distributed Tracing
-- AI Cost Intelligence
-- Telemetry-Based Diagnostics
-- Chaos Engineering
-
-The result is an observability platform where every AI decision is measurable, traceable and explainable.
-
----
-
-# Built With
-
-- Python
-- FastAPI
-- LangGraph
-- Next.js
-- React
-- Tailwind CSS
-- OpenTelemetry
-- SigNoz
-- SigNoz MCP
-- ClickHouse
-- Docker Compose
-
----
-
-# AI Usage Declaration
-
-This project was developed with AI-assisted engineering for productivity and documentation.
-
-AI tools were used for:
-
-- Initial boilerplate generation
-- Documentation refinement
-- Architecture brainstorming
-- Code suggestions
-
-All architecture decisions, implementation, debugging, OpenTelemetry instrumentation, SigNoz MCP integration, testing and final verification were reviewed, modified and validated manually.
-
-A detailed declaration is available in:
-
-```
-HACKATHON_NOTES.md
-```
-
----
-
-# Acknowledgements
-
-Special thanks to:
-
-- OpenTelemetry Community
-- SigNoz Team
-- LangGraph
-- FastAPI
-- Next.js
-- WeMakeDevs
-- Agents of SigNoz Hackathon 2026
-
-for building the open-source ecosystem that made this project possible.
-
----
-
-# Contributing
-
-Contributions are welcome.
-
-1. Fork the repository
-
-2. Create a feature branch
-
-```bash
-git checkout -b feature/my-feature
-```
-
-3. Commit your changes
-
-```bash
-git commit -m "Add awesome feature"
-```
-
-4. Push your branch
-
-```bash
-git push origin feature/my-feature
-```
-
-5. Open a Pull Request
-
----
-
-# License
-
-This project is licensed under the **MIT License**.
-
-See the `LICENSE` file for details.
-
----
-
-# Final Thoughts
-
-AgentOps Center is an exploration of what AI observability should look like in production.
-
-Rather than relying on assumptions or opaque reasoning, it combines **OpenTelemetry**, **SigNoz**, and the **Model Context Protocol (MCP)** to produce evidence-backed insights into complex multi-agent workflows.
-
-Whether you're debugging an autonomous agent, tracking LLM costs, investigating failures, or experimenting with chaos engineering, AgentOps Center demonstrates how modern AI systems can be observed with the same rigour as distributed cloud applications.
-
----
-
-<p align="center">
-
-### Built for the **Agents of SigNoz Hackathon 2026**
-
-**Observe • Diagnose • Improve**
-
-By **Swapnil Nicolson Dadel**
-
-⭐ If you found this project interesting, consider giving it a star.
-
-</p>
+Special thanks to the **SigNoz Team** for building world-class open-source observability infrastructure and organizing the **Agents of SigNoz Hackathon 2026**.
