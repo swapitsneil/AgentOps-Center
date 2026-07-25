@@ -24,14 +24,20 @@ Gain end-to-end visibility into autonomous AI agent workflows using **real telem
 
 ## 🌐 Live Deployment & Media Links
 
-| Resource | Link / URL | Platform | Status |
-| :--- | :--- | :--- | :---: |
-| **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
-| **Backend API Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
-| **Backend API Docs** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
-| **Medium Article** | 📝 [Read Technical Deep Dive](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7) | **Medium** | 🟢 Published |
-| **X / Twitter** | 🐦 [@swappingcodes](https://x.com/swappingcodes) | **X** | 🟢 Active |
-| **LinkedIn Profile** | 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/) | **LinkedIn** | 🟢 Connected |
+## 🎥 Demo & Resources
+
+| Resource | Link |
+|----------|------|
+| 🌐 **Live Demo** | https://agent-ops-center-kohl.vercel.app |
+| ⚡ **Backend API** | https://agentops-center-backend.onrender.com |
+| 📖 **API Documentation** | https://agentops-center-backend.onrender.com/docs |
+| 📝 **Technical Blog (Medium)** | https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7 |
+| 💻 **GitHub Repository** | https://github.com/swapitsneil/AgentOps-Center |
+| 💼 **LinkedIn** | https://www.linkedin.com/in/swapnil-nicolson-dadel/ |
+| 🐦 **X (Twitter)** | https://x.com/swappingcodes |
+| 🎥 **Demo Video** | *(Coming Soon — Submission Demo)* |
+
+> Built for the **Agents of SigNoz Hackathon 2026**, AgentOps Center demonstrates how OpenTelemetry, SigNoz, and the Model Context Protocol (MCP) can be combined to observe, debug, and explain multi-agent AI workflows using live telemetry rather than assumptions.
 
 ---
 
