@@ -178,12 +178,24 @@ class SigNozMCPClient:
         api_key: str | None = None,
         timeout: float | None = None,
     ):
-        self.mcp_url = (mcp_url or os.getenv("SIGNOZ_MCP_URL", "http://localhost:18080/mcp")).rstrip("/")
+        # Default candidates: env var > signoz-mcp-server:8080 > localhost:8080
+        env_url = os.getenv("SIGNOZ_MCP_URL")
+        self.mcp_candidates = [
+            url.rstrip("/") for url in [
+                env_url,
+                "http://signoz-mcp-server:8080/mcp",
+                "http://localhost:8080/mcp",
+                "http://signoz-query-service:8080/mcp",
+                "http://localhost:3301/mcp",
+            ] if url
+        ]
+        self.mcp_url = (mcp_url or self.mcp_candidates[0]).rstrip("/")
         self.api_key = api_key or os.getenv("SIGNOZ_API_KEY", "")
-        self.signoz_url = os.getenv("SIGNOZ_URL", "http://localhost:3301")
-        self.timeout = timeout or float(os.getenv("MCP_TIMEOUT", "30"))
+        self.signoz_url = os.getenv("SIGNOZ_URL", "http://localhost:8080").rstrip("/")
+        self.timeout = timeout or float(os.getenv("MCP_TIMEOUT", "15"))
         self._client: httpx.AsyncClient | None = None
         self._initialized: bool = False
+        self._direct_query_service_mode: bool = False
 
     async def __aenter__(self) -> "SigNozMCPClient":
         headers: dict[str, str] = {"Content-Type": "application/json"}
@@ -200,23 +212,42 @@ class SigNozMCPClient:
             await self._client.aclose()
 
     async def _ensure_initialized(self) -> bool:
-        """Send MCP initialize handshake if not already done."""
+        """Send MCP initialize handshake across candidates, with retry & fallback."""
         if self._initialized:
             return True
-        try:
-            payload = _build_initialize_payload()
-            resp = await self._client.post(self.mcp_url, content=json.dumps(payload))
-            resp.raise_for_status()
-            data = resp.json()
-            if "result" in data and "protocolVersion" in data.get("result", {}):
-                self._initialized = True
-                logger.info("SigNoz MCP server initialized successfully")
-                return True
-            logger.warning("MCP init response unexpected: %s", data)
-            return False
-        except Exception as exc:
-            logger.warning("SigNoz MCP server not reachable at %s: %s", self.mcp_url, exc)
-            return False
+
+        payload = _build_initialize_payload()
+
+        # Try MCP endpoints first
+        for target_url in self.mcp_candidates:
+            try:
+                resp = await self._client.post(target_url, content=json.dumps(payload))
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if "result" in data:
+                        self.mcp_url = target_url
+                        self._initialized = True
+                        self._direct_query_service_mode = False
+                        logger.info("SigNoz MCP server initialized at %s", target_url)
+                        return True
+            except Exception as exc:
+                logger.debug("MCP target %s not reachable: %s", target_url, exc)
+
+        # Fallback: Check direct SigNoz Query Service health endpoint
+        for qs_url in [self.signoz_url, "http://query-service:8080", "http://localhost:8080", "http://localhost:3301"]:
+            try:
+                resp = await self._client.get(f"{qs_url}/api/v1/health")
+                if resp.status_code == 200:
+                    self.signoz_url = qs_url
+                    self._initialized = True
+                    self._direct_query_service_mode = True
+                    logger.info("Connected to SigNoz Query Service directly at %s (REST fallback mode)", qs_url)
+                    return True
+            except Exception:
+                pass
+
+        logger.warning("SigNoz MCP Server and Query Service unreachable across all candidates.")
+        return False
 
     async def _call_tool(self, tool_name: str, arguments: dict | None = None) -> MCPToolResult:
         """
