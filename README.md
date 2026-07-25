@@ -35,7 +35,7 @@ Gain end-to-end visibility into autonomous AI agent workflows using **real telem
 | 💻 **GitHub Repository** | https://github.com/swapitsneil/AgentOps-Center |
 | 💼 **LinkedIn** | https://www.linkedin.com/in/swapnil-nicolson-dadel/ |
 | 🐦 **X (Twitter)** | https://x.com/swappingcodes |
-| 🎥 **Demo Video** | *(Coming Soon — Submission Demo)* |
+| 🎥 **Demo Video** | https://youtu.be/eLWzVLf20Mo |
 
 > Built for the **Agents of SigNoz Hackathon 2026**, AgentOps Center demonstrates how OpenTelemetry, SigNoz, and the Model Context Protocol (MCP) can be combined to observe, debug, and explain multi-agent AI workflows using live telemetry rather than assumptions.
 
