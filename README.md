@@ -24,7 +24,7 @@ Gain end-to-end visibility into your AI agents using **real telemetry**, not gue
 
 **Medium Technical Article** - [Read Hackathon Article](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7)
 
-**X** - 🐦 [@swappingcodes](https://x.com/swappingcodes)
+**X** - [@swappingcodes](https://x.com/swappingcodes)
 
 **LinkedIn** - 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/)
 
