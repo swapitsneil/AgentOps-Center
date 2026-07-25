@@ -96,10 +96,10 @@ def _determine_confidence(evidence: VerifiedEvidence) -> tuple[ConfidenceLevel, 
     has_logs = evidence.error_log_count > 0
     has_alerts = len(evidence.active_alerts) > 0
 
-    if (has_traces and (has_logs or has_alerts or has_metrics)) or (has_logs and has_metrics):
+    if (has_traces and (has_logs or has_alerts or has_metrics)) or (has_logs and (has_traces or has_metrics or has_alerts or len(evidence.signals) >= 2)):
         return (
             ConfidenceLevel.HIGH,
-            f"Telemetry signals present: traces={evidence.trace_count}, "
+            f"Telemetry verified from SigNoz: traces={evidence.trace_count}, "
             f"error_logs={evidence.error_log_count}, "
             f"alerts={len(evidence.active_alerts)}. "
             f"Total MCP signals collected: {signals}."
