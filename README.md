@@ -29,9 +29,6 @@ Gain end-to-end visibility into your AI agents using **real telemetry**, not gue
 | **AgentOps Center UI** | 🚀 [https://agent-ops-center-kohl.vercel.app](https://agent-ops-center-kohl.vercel.app/) | **Vercel** | 🟢 Live |
 | **Backend Service** | ⚡ [https://agentops-center-backend.onrender.com](https://agentops-center-backend.onrender.com) | **Render** | 🟢 Live |
 | **API Documentation** | 📖 [https://agentops-center-backend.onrender.com/docs](https://agentops-center-backend.onrender.com/docs) | **Render** | 🟢 Live |
-| **Medium Technical Article** | 📝 [Read Hackathon Article](https://medium.com/@swapnilnicolsondadel/why-is-my-ai-agent-taking-45-seconds-when-nothing-is-even-broken-5308685e5da7) | **Medium** | 🟢 Published |
-| **Twitter / X** | 🐦 [@swappingcodes](https://x.com/swappingcodes) | **X / Twitter** | 🟢 Active |
-| **LinkedIn** | 💼 [Swapnil Nicolson Dadel](https://www.linkedin.com/in/swapnil-nicolson-dadel/) | **LinkedIn** | 🟢 Active |
 
 ---
 
