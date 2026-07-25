@@ -329,6 +329,53 @@ Granular breakdown of input/output token usage and USD cost across monitor, diag
 
 ---
 
+## 🚀 Future Improvements
+
+While AgentOps Center is fully functional and demonstrates end-to-end AI observability with OpenTelemetry, SigNoz, and MCP, there are several areas planned for future enhancement:
+
+### Cloud Infrastructure
+- Migrate backend from the current demo deployment to a production-grade Kubernetes environment.
+- Add automatic scaling and zero-downtime deployments.
+- Introduce distributed caching for improved performance.
+
+### Authentication & Multi-Tenancy
+- User authentication and role-based access control.
+- Multi-workspace support for different teams.
+- Organization-level dashboards and permissions.
+
+### AI & Root Cause Analysis
+- Historical incident comparison.
+- Similar incident recommendations.
+- Automatic remediation suggestions.
+- Cross-workflow anomaly detection.
+
+### Observability
+- Custom dashboards for individual agent performance.
+- Long-term telemetry retention.
+- Additional OpenTelemetry semantic convention coverage.
+- Real-time alerting and notification integrations.
+
+### Integrations
+- Slack notifications.
+- Microsoft Teams integration.
+- GitHub issue creation.
+- Jira ticket generation.
+- PagerDuty incident creation.
+
+### Deployment
+- Helm Charts for Kubernetes.
+- Terraform deployment templates.
+- AWS, Azure and GCP deployment guides.
+- One-click cloud deployment options.
+
+### Reporting
+- PDF incident reports.
+- Executive dashboards.
+- Cost optimization reports.
+- Weekly AI operations summaries.
+
+---
+
 ## 📄 License & Acknowledgements
 
 This project is open-source under the [MIT License](LICENSE).
