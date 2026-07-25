@@ -64,38 +64,63 @@ Most AI monitoring tools attempt to solve this by storing unverified prompt logs
 Every LLM call, agent node transition, tool execution, token count, latency measurement, and runtime exception is instrumented using **OpenTelemetry GenAI Semantic Conventions (`gen_ai.*`)**, exported to **SigNoz ClickHouse (`v0.144.6`)**, and queried by an **Evidence Engine** over the **SigNoz Model Context Protocol (MCP)**.
 
 ```
-                                  User / UI
-                                      │
-                                      ▼
-                        ┌───────────────────────────┐
-                        │    Next.js 15 Frontend    │
-                        │    (Vercel Production)    │
-                        └─────────────┬─────────────┘
-                                      │ REST / SSE
-                                      ▼
-                        ┌───────────────────────────┐
-                        │    FastAPI + LangGraph    │
-                        │    (Render Production)    │
-                        └──────┬─────────────┬──────┘
-                               │             │
-                    OTLP gRPC  │             │ MCP JSON-RPC
-                    (Port 4317)│             │ (Port 18080)
-                               ▼             ▼
-                    ┌──────────────┐   ┌────────────────────┐
-                    │OTel Collector│   │ SigNoz MCP Server  │
-                    └──────┬───────┘   └─────────┬──────────┘
-                           │                     │
-                           ▼                     │
-                    ┌──────────────┐             │ HTTP API
-                    │ ClickHouse   │             │ (Port 8080)
-                    │ (v24.1.2)    │             │
-                    └──────┬───────┘             │
-                           │                     │
-                           ▼                     │
-                    ┌────────────────────────────┴─────┐
-                    │       SigNoz Query Service       │
-                    │            (v0.144.6)            │
-                    └──────────────────────────────────┘
+
+                                      ┌────────────────────────────┐
+                                      │          👤 User           │
+                                      └─────────────┬──────────────┘
+                                                    │
+                                                    ▼
+                                  ┌────────────────────────────────┐
+                                  │   Next.js 15 Frontend (Vercel) │
+                                  │ Dashboard • Copilot • Chaos UI │
+                                  └───────────────┬────────────────┘
+                                                  │ REST / SSE
+                                                  ▼
+                               ┌────────────────────────────────────────┐
+                               │ FastAPI Backend + LangGraph (Render)   │
+                               │ Monitor • Diagnose • Fix • Report      │
+                               └──────────────┬──────────────┬──────────┘
+                                              │              │
+                         OpenTelemetry        │              │ MCP
+                           OTLP gRPC          │              │ JSON-RPC
+                                              ▼              ▼
+                                 ┌─────────────────┐   ┌─────────────────────┐
+                                 │ OTel Collector  │   │  SigNoz MCP Server  │
+                                 └────────┬────────┘   └──────────┬──────────┘
+                                          │                       │
+                                          ▼                       │
+                                 ┌─────────────────┐              │
+                                 │    SigNoz       │◄─────────────┘
+                                 │ Query Service   │
+                                 └────────┬────────┘
+                                          │
+                                          ▼
+                                 ┌─────────────────┐
+                                 │   ClickHouse    │
+                                 │ Traces • Logs   │
+                                 │ Metrics         │
+                                 └────────┬────────┘
+                                          ▲
+                                          │
+                                 Evidence Retrieval
+                                          │
+                                          ▼
+                            ┌────────────────────────────────┐
+                            │      Evidence Engine           │
+                            │ Correlates Traces, Logs,       │
+                            │ Metrics & MCP Responses        │
+                            └───────────────┬────────────────┘
+                                            │
+                                            ▼
+                           ┌─────────────────────────────────┐
+                           │      Root Cause Copilot         │
+                           │ Evidence-backed Diagnosis       │
+                           │ Confidence Scoring              │
+                           └───────────────┬─────────────────┘
+                                           │
+                                           ▼
+                              👤 Actionable Insights
+
 ```
 
 ---
